@@ -9,6 +9,7 @@ from datetime import datetime
 import sqlite3
 import os
 import hashlib
+import subprocess
 from agent import StockDataAgent
 from support_ticket import SupportTicketManager
 
@@ -18,6 +19,31 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Auto-initialize database if it doesn't exist (for Hugging Face Spaces)
+if 'db_initialized' not in st.session_state:
+    st.session_state.db_initialized = False
+
+if not os.path.exists('stock_data.db') and not st.session_state.db_initialized:
+    with st.spinner("Initializing stock database... This may take a moment."):
+        try:
+            result = subprocess.run(
+                ["python", "stock_database_setup.py"], 
+                capture_output=True, 
+                text=True,
+                timeout=300  # 5 minute timeout
+            )
+            if result.returncode == 0:
+                st.session_state.db_initialized = True
+                st.success("Database initialized successfully!")
+            else:
+                st.warning(f"Database initialization had issues: {result.stderr}")
+        except subprocess.TimeoutExpired:
+            st.error("Database initialization timed out. Please try again.")
+        except Exception as e:
+            st.warning(f"Could not auto-initialize database: {str(e)}")
+elif os.path.exists('stock_data.db'):
+    st.session_state.db_initialized = True
 
 # Initialize session state
 if 'agent' not in st.session_state:

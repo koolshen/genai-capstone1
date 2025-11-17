@@ -1,3 +1,15 @@
+---
+title: Stock Data Insights App
+emoji: 📈
+colorFrom: blue
+colorTo: green
+sdk: streamlit
+sdk_version: 1.28.0
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # Stock Data Insights App
 
 A Streamlit-based application that provides AI-powered insights from a stock market SQLite database. The app features an intelligent agent powered by Google Gemini AI that helps users query and analyze stock data using natural language, with built-in safety features to prevent dangerous database operations.
@@ -20,10 +32,12 @@ A Streamlit-based application that provides AI-powered insights from a stock mar
 
 ## Installation
 
+### Local Installation
+
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd GenerativeAi
+cd genai-capstone1
 ```
 
 2. Install dependencies:
@@ -32,15 +46,11 @@ pip install -r requirements.txt
 ```
 
 3. Set up environment variables:
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and add your API keys:
+Create a `.env` file in the root directory with your API keys:
 ```
 GEMINI_API_KEY=your_gemini_api_key_here
 
-# Optional: For support ticket functionality (Trello only)
+# Optional: For support ticket functionality
 TRELLO_API_KEY=your_trello_api_key
 TRELLO_TOKEN=your_trello_token
 TRELLO_BOARD_ID=your_trello_board_id
@@ -65,6 +75,30 @@ python setup_check.py
 ```
 
 This will check if all dependencies, environment variables, and database are properly configured.
+
+### Hugging Face Spaces
+
+To deploy this app on Hugging Face Spaces:
+
+1. **Create a new Space** on [Hugging Face Spaces](https://huggingface.co/spaces)
+   - Choose **Streamlit** as the SDK
+   - Set the repository name (e.g., `stock-data-insights`)
+
+2. **Add your API key as a Secret**:
+   - Go to your Space settings
+   - Navigate to "Variables and secrets"
+   - Add a new secret named `GEMINI_API_KEY` with your API key value
+   - (Optional) Add Trello credentials if you want support ticket functionality
+
+3. **Push your code** to the Space:
+   ```bash
+   git remote add space https://huggingface.co/spaces/<username>/<space-name>
+   git push space main
+   ```
+
+4. **The database will auto-initialize** on first run. The app will automatically create the stock database if it doesn't exist.
+
+**Note**: The database initialization may take a few minutes on the first run. Be patient!
 
 ## Usage
 
