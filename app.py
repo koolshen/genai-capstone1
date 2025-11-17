@@ -21,25 +21,12 @@ st.set_page_config(
 )
 
 # Auto-initialize database if it doesn't exist (for Hugging Face Spaces)
-# Initialize session state safely
-try:
-    if 'db_initialized' not in st.session_state:
-        st.session_state.db_initialized = False
-except (AttributeError, RuntimeError):
-    # Session state not available yet, skip initialization check
-    pass
-
-# Check if database exists and initialize if needed
+# Check if database exists (doesn't require session state)
 db_exists = os.path.exists('stock_data.db')
-db_initialized = False
 
-try:
-    db_initialized = st.session_state.get('db_initialized', False)
-except (AttributeError, RuntimeError):
-    # Session state not available, assume not initialized
-    db_initialized = False
-
-if not db_exists and not db_initialized:
+# Only initialize if database doesn't exist
+# We don't check session state here to avoid errors during script execution
+if not db_exists:
     with st.spinner("Initializing stock database... This may take a moment."):
         try:
             result = subprocess.run(
@@ -60,11 +47,6 @@ if not db_exists and not db_initialized:
             st.error("Database initialization timed out. Please try again.")
         except Exception as e:
             st.warning(f"Could not auto-initialize database: {str(e)}")
-elif db_exists:
-    try:
-        st.session_state.db_initialized = True
-    except (AttributeError, RuntimeError):
-        pass
 
 # Initialize session state
 if 'agent' not in st.session_state:
